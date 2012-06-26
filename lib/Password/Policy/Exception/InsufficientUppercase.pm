@@ -5,7 +5,7 @@ use warnings;
 
 use parent 'Password::Policy::Exception';
 
-sub error { return "The specified password did not have enough uppercase characters"; }
+sub error { return "The specified password did not have enough uppercase ASCII characters"; }
 
 1;
 

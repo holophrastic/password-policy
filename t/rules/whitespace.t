@@ -7,28 +7,22 @@ use Test::More;
 use Test::Fatal;
 
 BEGIN {
-    use_ok('Password::Policy::Rule::Length');
+    use_ok('Password::Policy::Rule::Whitespace');
 }
 
-my $rule = Password::Policy::Rule::Length->new;
+my $rule = Password::Policy::Rule::Whitespace->new;
 
-is($rule->arg, 8, 'Defaults to a length of eight');
+is($rule->arg, 1, 'Defaults to needing one whitespace character');
 
 isa_ok(exception { $rule->check(''); }, 'Password::Policy::Exception::EmptyPassword', 'Empty password dies');
-isa_ok(exception { $rule->check('abcdef'); }, 'Password::Policy::Exception::InsufficientLength', 'Insufficient length dies');
+isa_ok(exception { $rule->check('abcdef'); }, 'Password::Policy::Exception::InsufficientWhitespace', 'Insufficient number of whitespace characters dies');
+is($rule->check('abc def'), 1, 'One whitespace character is enough to satisfy the condition');
 
-my $rule12 = Password::Policy::Rule::Length->new(12);
+my $rule4 = Password::Policy::Rule::Whitespace->new(4);
 
-is($rule12->arg, 12, 'Has a length of twelve');
-isa_ok(exception { $rule12->check('abc def ghi'); }, 'Password::Policy::Exception::InsufficientLength', 'Eleven character password dies');
-is($rule12->check('abc def ghi jk'), 1, 'Thirteen character password (counting spaces) succeeds');
-
-# "This is a simple sentence in Japanese", via google translate
-is($rule12->check('これは日本での単純な文です。'), 1, 'Fourteen character non-ASCII password succeeds');
-
-my $rule15 = Password::Policy::Rule::Length->new(15);
-
-# "This is a simple sentence in Japanese", via google translate
-isa_ok(exception { $rule15->check('これは日本での単純な文です。'); }, 'Password::Policy::Exception::InsufficientLength', 'Fourteen character non-ASCII password dies');
+is($rule4->arg, 4, 'Requires four whitespace characters');
+isa_ok(exception { $rule4->check("abc\t\tdef ghi"); }, 'Password::Policy::Exception::InsufficientWhitespace', 'Has three whitespace characters, but requires four');
+is($rule4->check('abc12 def3  ghi jklmnop90'), 1, 'Four whitespace character password succeeds');
+is($rule4->check("abc\t12 def34 ghi\t56 jklmnop"), 1, 'Greater than four whitespace character password succeeds');
 
 done_testing;

@@ -7,28 +7,22 @@ use Test::More;
 use Test::Fatal;
 
 BEGIN {
-    use_ok('Password::Policy::Rule::Length');
+    use_ok('Password::Policy::Rule::Numbers');
 }
 
-my $rule = Password::Policy::Rule::Length->new;
+my $rule = Password::Policy::Rule::Numbers->new;
 
-is($rule->arg, 8, 'Defaults to a length of eight');
+is($rule->arg, 1, 'Defaults to needing one number');
 
 isa_ok(exception { $rule->check(''); }, 'Password::Policy::Exception::EmptyPassword', 'Empty password dies');
-isa_ok(exception { $rule->check('abcdef'); }, 'Password::Policy::Exception::InsufficientLength', 'Insufficient length dies');
+isa_ok(exception { $rule->check('abcdef'); }, 'Password::Policy::Exception::InsufficientNumbers', 'Insufficient number of numbers dies');
+is($rule->check('abcdef1'), 1, 'One number is enough to satisfy the condition');
 
-my $rule12 = Password::Policy::Rule::Length->new(12);
+my $rule4 = Password::Policy::Rule::Numbers->new(4);
 
-is($rule12->arg, 12, 'Has a length of twelve');
-isa_ok(exception { $rule12->check('abc def ghi'); }, 'Password::Policy::Exception::InsufficientLength', 'Eleven character password dies');
-is($rule12->check('abc def ghi jk'), 1, 'Thirteen character password (counting spaces) succeeds');
-
-# "This is a simple sentence in Japanese", via google translate
-is($rule12->check('これは日本での単純な文です。'), 1, 'Fourteen character non-ASCII password succeeds');
-
-my $rule15 = Password::Policy::Rule::Length->new(15);
-
-# "This is a simple sentence in Japanese", via google translate
-isa_ok(exception { $rule15->check('これは日本での単純な文です。'); }, 'Password::Policy::Exception::InsufficientLength', 'Fourteen character non-ASCII password dies');
+is($rule4->arg, 4, 'Requires four numbers');
+isa_ok(exception { $rule4->check('abcdef ghi123'); }, 'Password::Policy::Exception::InsufficientNumbers', 'Has three numbers, but requires four');
+is($rule4->check('abc12 def34'), 1, 'Four number password succeeds');
+is($rule4->check('abc12 def34 ghi56'), 1, 'Greater than four number password succeeds');
 
 done_testing;
