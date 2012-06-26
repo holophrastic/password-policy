@@ -76,7 +76,7 @@ sub process {
     my $rules = $self->rules($args->{profile});
     my $algorithm = delete $rules->{algorithm} || Password::Policy::Exception::NoAlgorithm->throw;
     foreach my $rule (@{$rules}) {
-        my $rule_class = 'Password::Policy::Rule::' . $rule->{type};
+        my $rule_class = 'Password::Policy::Rule::' . ucfirst($rule->{type});
         Class::Load::load_class($rule_class);
         my $rule_obj = $rule_class->new($rule->{arg});
         my $check = $rule_obj->check($password);
