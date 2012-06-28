@@ -17,7 +17,7 @@ is($rule->arg, 1, 'Defaults to needing one uppercase ASCII');
 isa_ok(exception { $rule->check(''); }, 'Password::Policy::Exception::EmptyPassword', 'Empty password dies');
 isa_ok(exception { $rule->check('abcdef'); }, 'Password::Policy::Exception::InsufficientUppercase', 'Insufficient number of uppercase ASCII dies');
 is($rule->check('abcDef'), 1, 'One uppercase ASCII is enough to satisfy the condition');
-isa_ok(exception { $rule->check('これは日本での単純な文です。'); }, 'Password::Policy::Exception::InsufficientUppercase', 'Non-ASCII password dies');
+isa_ok(exception { $rule->check('この単純な文は日本語です'); }, 'Password::Policy::Exception::InsufficientUppercase', 'Non-ASCII password dies');
 
 my $rule4 = Password::Policy::Rule::Uppercase->new(4);
 

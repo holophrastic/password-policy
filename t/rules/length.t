@@ -29,6 +29,7 @@ is($rule12->check('これは日本での単純な文です。'), 1, 'Fourteen ch
 my $rule15 = Password::Policy::Rule::Length->new(15);
 
 # "This is a simple sentence in Japanese", via google translate
-isa_ok(exception { $rule15->check('これは日本での単純な文です。'); }, 'Password::Policy::Exception::InsufficientLength', 'Fourteen character non-ASCII password dies');
+# amended to be less stilted, thanks to sartak
+isa_ok(exception { $rule15->check('この単純な文は日本語です'); }, 'Password::Policy::Exception::InsufficientLength', 'Fourteen character non-ASCII password dies');
 
 done_testing;

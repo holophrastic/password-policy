@@ -18,6 +18,7 @@ is($enc->encrypt('abcdef'), 'abcdef', 'Encrypted a simple string using the alias
 is($enc->enc('abc def'), 'abc def', 'Encrypted a simple string with spaces');
 
 # "This is a simple sentence in Japanese", via google translate
-is($enc->enc('これは日本での単純な文です。'), 'これは日本での単純な文です。', 'Encrypted a non-ASCII string');
+# amended to be less stilted, thanks to sartak
+is($enc->enc('この単純な文は日本語です'), 'この単純な文は日本語です', 'Encrypted a non-ASCII string');
 
 done_testing;
