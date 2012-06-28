@@ -15,12 +15,13 @@ use Password::Policy::Exception::InvalidAlgorithm;
 use Password::Policy::Exception::InvalidProfile;
 use Password::Policy::Exception::InvalidRule;
 use Password::Policy::Exception::NoAlgorithm;
+use Password::Policy::Exception::ReusedPassword;
 
 sub new {
     my ($class, %args) = @_;
 
     my $config_file = $args{config};
-    my $previous = $args{previous} || \[];
+    my $previous = $args{previous} || [];
 
     my $config = Config::Any->load_files({ files => [ $config_file ], use_ext => 1 });
     my $rules = {};
@@ -73,6 +74,10 @@ sub profiles {
     return (shift)->{_profiles};
 }
 
+sub previous {
+    return (shift)->{_previous};
+}
+
 sub rules {
     my $self = shift;
     my $profile = shift || 'default';
@@ -89,6 +94,7 @@ sub process {
     my $algorithm = $rules->{algorithm} || Password::Policy::Exception::NoAlgorithm->throw;
     foreach my $rule (keys(%{$rules})) {
         next if($rule eq 'algorithm');
+
         my $rule_class = 'Password::Policy::Rule::' . ucfirst($rule);
         try {
             Class::Load::load_class($rule_class);
@@ -103,7 +109,15 @@ sub process {
             Password::Policy::Exception->throw;
         }
     }
-    return $self->encrypt($algorithm, $password);
+    my $enc_password = $self->encrypt($algorithm, $password);
+
+    # This is a post-encryption rule, so it's a special case.
+    if($self->previous) {
+        foreach my $previous_password (@{$self->previous}) {
+            Password::Policy::Exception::ReusedPassword->throw if($enc_password eq $previous_password);
+        }
+    }
+    return $enc_password;
 }
 
 sub encrypt {

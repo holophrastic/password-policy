@@ -27,7 +27,4 @@ is($pp->process({ password => $passwd, profile => 'site_moderator' }), 'Super Aw
 is($pp->process({ password => $passwd, profile => 'site_admin' }), '51 drowssaP emosewA repuS', 'Improved super awesome password passes site_admin');
 isa_ok(exception { $pp->process({ password => $passwd, profile => 'grab_bag' }) }, 'Password::Policy::Exception::InsufficientUppercase', 'Improved super awesome password fails grab_bag');
 
-
-
-
 done_testing;
