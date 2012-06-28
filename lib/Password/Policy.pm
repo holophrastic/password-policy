@@ -7,9 +7,13 @@ use warnings;
 
 use Class::Load;
 use Config::Any;
+use Try::Tiny;
 
+use Password::Policy::Exception;
 use Password::Policy::Exception::EmptyPassword;
+use Password::Policy::Exception::InvalidAlgorithm;
 use Password::Policy::Exception::InvalidProfile;
+use Password::Policy::Exception::InvalidRule;
 use Password::Policy::Exception::NoAlgorithm;
 
 sub new {
@@ -21,13 +25,17 @@ sub new {
     my $config = Config::Any->load_files({ files => [ $config_file ], use_ext => 1 });
     my $rules = {};
 
+    $config = $config->[0]->{$config_file};
+    my @profiles = keys(%{$config});
+
     my $self = bless {
-        _config => $config->[0]->{$config_file},
+        _config => $config,
         _rules => $rules,
-        _previous => $previous
+        _previous => $previous,
+        _profiles => \@profiles
     } => $class;
 
-    foreach my $key (keys(%{$self->config})) {
+    foreach my $key (@profiles) {
         $rules->{$key} = $self->_parse_rules($key);
     }
 
@@ -61,6 +69,10 @@ sub config {
     return (shift)->{_config};
 }
 
+sub profiles {
+    return (shift)->{_profiles};
+}
+
 sub rules {
     my $self = shift;
     my $profile = shift || 'default';
@@ -74,11 +86,16 @@ sub process {
     my $password = $args->{password} || Password::Policy::Exception::EmptyPassword->throw;
 
     my $rules = $self->rules($args->{profile});
-    my $algorithm = delete $rules->{algorithm} || Password::Policy::Exception::NoAlgorithm->throw;
-    foreach my $rule (@{$rules}) {
-        my $rule_class = 'Password::Policy::Rule::' . ucfirst($rule->{type});
-        Class::Load::load_class($rule_class);
-        my $rule_obj = $rule_class->new($rule->{arg});
+    my $algorithm = $rules->{algorithm} || Password::Policy::Exception::NoAlgorithm->throw;
+    foreach my $rule (keys(%{$rules})) {
+        next if($rule eq 'algorithm');
+        my $rule_class = 'Password::Policy::Rule::' . ucfirst($rule);
+        try {
+            Class::Load::load_class($rule_class);
+        } catch {
+            Password::Policy::Exception::InvalidRule->throw;
+        };
+        my $rule_obj = $rule_class->new($rules->{$rule});
         my $check = $rule_obj->check($password);
         unless($check) {
             # no idea what failed if we didn't get a more specific exception, so
@@ -86,9 +103,21 @@ sub process {
             Password::Policy::Exception->throw;
         }
     }
+    return $self->encrypt($algorithm, $password);
+}
+
+sub encrypt {
+    my ($self, $algorithm, $password) = @_;
+
+    unless($algorithm) { Password::Policy::Exception::NoAlgorithm->throw; }
+    unless($password) { Password::Policy::Exception::EmptyPassword->throw; }
 
     my $enc_class = 'Password::Policy::Encryption::' . $algorithm;
-    Class::Load::load_class($enc_class);
+    try {
+        Class::Load::load_class($enc_class);
+    } catch {
+        Password::Policy::Exception::InvalidAlgorithm->throw;
+    };
     my $enc_obj = $enc_class->new;
     my $new_password = $enc_obj->enc($password);
     return $new_password;

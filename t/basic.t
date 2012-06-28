@@ -14,8 +14,20 @@ my $test_yml_loc = "/Users/anelson/ext_src/password-policy/test_config/sample.ym
 
 my $pp = Password::Policy->new(config => $test_yml_loc);
 
-use DDP;
-p $pp;
+is($pp->process({ password => 'abcdef' }), 'abcdef', 'Simple plaintext password passes the default');
+isa_ok(exception { $pp->process({ password => 'abc' }) }, 'Password::Policy::Exception::InsufficientLength', 'Too-short plaintext password dies with the default');
+
+my $passwd = 'super awesome password';
+is($pp->process({ password => $passwd }), 'super awesome password', 'Super awesome password passes the default');
+isa_ok(exception { $pp->process({ password => $passwd, profile => 'site_moderator' }) }, 'Password::Policy::Exception::InsufficientUppercase', 'Super awesome password has no uppercase ASCII');
+
+$passwd = 'Super Awesome Password 15';
+is($pp->process({ password => $passwd }), 'Super Awesome Password 15', 'Improved super awesome password passes the default');
+is($pp->process({ password => $passwd, profile => 'site_moderator' }), 'Super Awesome Password 15', 'Improved super awesome password passes site_moderator');
+is($pp->process({ password => $passwd, profile => 'site_admin' }), '51 drowssaP emosewA repuS', 'Improved super awesome password passes site_admin');
+isa_ok(exception { $pp->process({ password => $passwd, profile => 'grab_bag' }) }, 'Password::Policy::Exception::InsufficientUppercase', 'Improved super awesome password fails grab_bag');
+
+
 
 
 done_testing;
