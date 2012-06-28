@@ -224,8 +224,9 @@ sub process {
 
     my $rules = $self->rules($args->{profile});
     my $algorithm = $rules->{algorithm} || Password::Policy::Exception::NoAlgorithm->throw;
+    my $algorithm_args = $rules->{algorithm_args} || {};
     foreach my $rule (keys(%{$rules})) {
-        next if($rule eq 'algorithm');
+        next if($rule =~ /^algorithm/);
 
         my $rule_class = 'Password::Policy::Rule::' . ucfirst($rule);
         try {
@@ -241,7 +242,12 @@ sub process {
             Password::Policy::Exception->throw;
         }
     }
-    my $enc_password = $self->encrypt($algorithm, $password);
+
+    my $enc_password = $self->encrypt({
+        password => $password,
+        algorithm => $algorithm,
+        algorithm_args => $algorithm_args
+    });
 
     # This is a post-encryption rule, so it's a special case.
     if($self->previous) {
@@ -254,18 +260,19 @@ sub process {
 
 =method encrypt
 
-Encrypt a password. Takes two arguments, the algorithm to use, and the plain text
-password to encrypt.
+Encrypt a password. Takes a hashref with the algorithm to use, the plain text password
+to encrypt, and optionally any arguments you want to pass to the algorithm's module.
 
-    my $enc_passwd = $pp->encrypt('ROT13', 'i like cheese');
+    my $enc_passwd = $pp->encrypt({ password => 'i like cheese', algorithm =>'ROT-13' });
 
 =cut
 
 sub encrypt {
-    my ($self, $algorithm, $password) = @_;
+    my ($self, $args) = @_;
 
-    unless($algorithm) { Password::Policy::Exception::NoAlgorithm->throw; }
-    unless($password) { Password::Policy::Exception::EmptyPassword->throw; }
+    my $password = $args->{password} ||Password::Policy::Exception::EmptyPassword->throw;
+    my $algorithm = $args->{algorithm} ||Password::Policy::Exception::NoAlgorithm->throw;
+    my $algorithm_args = $args->{algorithm_args} || {};
 
     my $enc_class = 'Password::Policy::Encryption::' . $algorithm;
     try {
@@ -273,7 +280,7 @@ sub encrypt {
     } catch {
         Password::Policy::Exception::InvalidAlgorithm->throw;
     };
-    my $enc_obj = $enc_class->new;
+    my $enc_obj = $enc_class->new($algorithm_args);
     my $new_password = $enc_obj->enc($password);
     return $new_password;
 }
