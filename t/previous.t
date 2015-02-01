@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests=>4;
 use Test::Fatal;
 
 BEGIN {
@@ -17,5 +17,3 @@ my $pp = Password::Policy->new(config => $test_yml_loc, previous => [ 'abcdef', 
 isa_ok(exception { $pp->process({ password => 'abcdef' }) }, 'Password::Policy::Exception::ReusedPassword', 'Used that password before');
 isa_ok(exception { $pp->process({ password => 'abcdefg' }) }, 'Password::Policy::Exception::ReusedPassword', 'Used that password before too');
 is($pp->process({ password => 'abcdefgh' }), 'abcdefgh', 'Have not used this one before');
-
-done_testing;

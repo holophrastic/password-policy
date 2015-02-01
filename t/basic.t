@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests=>9;
 use Test::Fatal;
 
 BEGIN {
@@ -26,5 +26,3 @@ is($pp->process({ password => $passwd }), 'Super Awesome Password 15', 'Improved
 is($pp->process({ password => $passwd, profile => 'site_moderator' }), 'Super Awesome Password 15', 'Improved super awesome password passes site_moderator');
 is($pp->process({ password => $passwd, profile => 'site_admin' }), '51 drowssaP emosewA repuS', 'Improved super awesome password passes site_admin');
 isa_ok(exception { $pp->process({ password => $passwd, profile => 'grab_bag' }) }, 'Password::Policy::Exception::InsufficientUppercase', 'Improved super awesome password fails grab_bag');
-
-done_testing;

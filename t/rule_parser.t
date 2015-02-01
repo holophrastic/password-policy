@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests=>5;
 use Test::Fatal;
 
 BEGIN {
@@ -56,6 +56,3 @@ is_deeply(
     },
     'Grab Bag profile'
 );
-
-
-done_testing;

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests=>9;
 use Test::Fatal;
 
 BEGIN {
@@ -24,5 +24,3 @@ is($rule4->arg, 4, 'Requires four numbers');
 isa_ok(exception { $rule4->check('abcdef ghi123'); }, 'Password::Policy::Exception::InsufficientNumbers', 'Has three numbers, but requires four');
 is($rule4->check('abc12 def34'), 1, 'Four number password succeeds');
 is($rule4->check('abc12 def34 ghi56'), 1, 'Greater than four number password succeeds');
-
-done_testing;
