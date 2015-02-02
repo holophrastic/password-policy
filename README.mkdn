@@ -4,7 +4,7 @@ Password::Policy - Make managing multiple password strength profiles easy
 
 # VERSION
 
-version 0.02
+version 0.04
 
 # UNICODE
 
@@ -139,7 +139,7 @@ to encrypt, and optionally any arguments you want to pass to the algorithm's mod
 
 # ACKNOWLEDGEMENTS
 
-The unit tests got a nice round of cleanup from StarlightPL. Thanks!
+The unit tests got a nice round of cleanup from StarLightPL. Thanks!
 
 # AUTHOR
 

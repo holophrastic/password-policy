@@ -288,7 +288,7 @@ sub encrypt {
 
 =head1 ACKNOWLEDGEMENTS
 
-The unit tests got a nice round of cleanup from StarlightPL. Thanks!
+The unit tests got a nice round of cleanup from StarLightPL. Thanks!
 
 =cut
 
