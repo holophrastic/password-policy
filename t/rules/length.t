@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests=>9;
 use Test::Fatal;
 
 BEGIN {
@@ -31,5 +31,3 @@ my $rule15 = Password::Policy::Rule::Length->new(15);
 # "This is a simple sentence in Japanese", via google translate
 # amended to be less stilted, thanks to sartak
 isa_ok(exception { $rule15->check('この単純な文は日本語です'); }, 'Password::Policy::Exception::InsufficientLength', 'Fourteen character non-ASCII password dies');
-
-done_testing;

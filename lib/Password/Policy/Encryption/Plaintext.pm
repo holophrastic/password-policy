@@ -5,8 +5,6 @@ use warnings;
 
 use parent 'Password::Policy::Encryption';
 
-use String::Multibyte;
-
 sub enc {
     my $self = shift;
     my $password = $self->prepare(shift);

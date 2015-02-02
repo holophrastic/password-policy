@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests=>9;
 use Test::Fatal;
 
 BEGIN {
@@ -24,5 +24,3 @@ is($rule4->arg, 4, 'Requires four whitespace characters');
 isa_ok(exception { $rule4->check("abc\t\tdef ghi"); }, 'Password::Policy::Exception::InsufficientWhitespace', 'Has three whitespace characters, but requires four');
 is($rule4->check('abc12 def3  ghi jklmnop90'), 1, 'Four whitespace character password succeeds');
 is($rule4->check("abc\t12 def34 ghi\t56 jklmnop"), 1, 'Greater than four whitespace character password succeeds');
-
-done_testing;

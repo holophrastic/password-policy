@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests=>10;
 use Test::Fatal;
 
 BEGIN {
@@ -25,5 +25,3 @@ is($rule4->arg, 4, 'Requires four lowercase ASCII');
 isa_ok(exception { $rule4->check('ABCDeFG hiJKLMOP'); }, 'Password::Policy::Exception::InsufficientLowercase', 'Has three lowercase ASCII, but requires four');
 is($rule4->check('abcdEFGHI'), 1, 'Password with four lowercase ASCII succeeds');
 is($rule4->check('abcdef'), 1, 'Password with greater than four lowercase ASCII succeeds');
-
-done_testing;

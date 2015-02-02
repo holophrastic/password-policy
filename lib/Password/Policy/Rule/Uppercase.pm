@@ -5,8 +5,6 @@ use warnings;
 
 use parent 'Password::Policy::Rule';
 
-use String::Multibyte;
-
 use Password::Policy::Exception::InsufficientUppercase;
 
 sub check {

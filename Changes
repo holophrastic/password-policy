@@ -1,0 +1,9 @@
+{{$NEXT}}
+
+    - fix random exception order
+    - fix tests
+    - kwalitee fixes
+
+0.02 2012-06-28
+
+    - First release

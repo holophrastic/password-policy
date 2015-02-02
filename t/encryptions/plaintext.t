@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests=>6;
 use Test::Fatal;
 
 BEGIN {
@@ -20,5 +20,3 @@ is($enc->enc('abc def'), 'abc def', 'Encrypted a simple string with spaces');
 # "This is a simple sentence in Japanese", via google translate
 # amended to be less stilted, thanks to sartak
 is($enc->enc('この単純な文は日本語です'), 'この単純な文は日本語です', 'Encrypted a non-ASCII string');
-
-done_testing;

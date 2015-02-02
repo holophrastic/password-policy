@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
-use Test::Fatal;
+use Test::More tests=>5;
 
 BEGIN {
     use_ok('Password::Policy');
@@ -56,6 +55,3 @@ is_deeply(
     },
     'Grab Bag profile'
 );
-
-
-done_testing;
