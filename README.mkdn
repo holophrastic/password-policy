@@ -137,6 +137,10 @@ to encrypt, and optionally any arguments you want to pass to the algorithm's mod
 
     my $enc_passwd = $pp->encrypt({ password => 'i like cheese', algorithm =>'ROT-13' });
 
+# ACKNOWLEDGEMENTS
+
+The unit tests got a nice round of cleanup from StarlightPL. Thanks!
+
 # AUTHOR
 
 Andrew Nelson <anelson@cpan.org>

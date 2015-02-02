@@ -286,6 +286,12 @@ sub encrypt {
     return $new_password;
 }
 
+=head1 ACKNOWLEDGEMENTS
+
+The unit tests got a nice round of cleanup from StarlightPL. Thanks!
+
+=cut
+
 1;
 
 __END__
