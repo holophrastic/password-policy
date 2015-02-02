@@ -9,16 +9,16 @@ site_moderator:
     uppercase: 1
 
 site_admin:
+    algorithm: "ROT13"
     inherit: "site_moderator"
     length: 10
-    # will have uppercase: 1 from site_moderator
     numbers: 2
-    algorithm: "ROT13"
+    # will have uppercase: 1 from site_moderator
 
 grab_bag:
+    algorithm: "ROT13"
     length: 15
-    uppercase: 4
     lowercase: 6
     numbers: 3
+    uppercase: 4
     whitespace: 2
-    algorithm: "ROT13"

@@ -6,6 +6,7 @@ use strict;
 use warnings;
 
 use Class::Load;
+use Clone qw/clone/;
 use Config::Any;
 use Try::Tiny;
 
@@ -156,7 +157,7 @@ sub new {
         _config => $config,
         _rules => $rules,
         _previous => $previous,
-        _profiles => \@profiles
+        _profiles => \@profiles,
     } => $class;
 
     foreach my $key (@profiles) {
@@ -171,7 +172,7 @@ sub _parse_rules {
     my ($self, $profile_name) = @_;
     my $rules;
 
-    my $profile = $self->config->{$profile_name};
+    my $profile = clone $self->config->{$profile_name};
     if(my $parent = delete $profile->{inherit}) {
         $rules = $self->_parse_rules($parent);
     }
@@ -212,7 +213,7 @@ sub rules {
 
 Process a password. Takes a hashref as an argument, with at least one argument,
 'password', that is the plaintext password. It also takes 'profile', which will
-refer to a profile in the configuration file.
+refer to a profile in the configuration file. Rules will be checked in alphabetical order.
 
     my $enc_passwd = $pp->process({ password => 'i like cheese', profile => 'site_admin' });
 
@@ -225,8 +226,8 @@ sub process {
     my $rules = $self->rules($args->{profile});
     my $algorithm = $rules->{algorithm} || Password::Policy::Exception::NoAlgorithm->throw;
     my $algorithm_args = $rules->{algorithm_args} || {};
-    foreach my $rule (keys(%{$rules})) {
-        next if($rule =~ /^algorithm/);
+    foreach my $rule (sort keys(%{$rules})) {
+        next if($rule eq 'algorithm');
 
         my $rule_class = 'Password::Policy::Rule::' . ucfirst($rule);
         try {
