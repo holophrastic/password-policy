@@ -15,9 +15,16 @@ sub check {
     my $self = shift;
     my $password = $self->prepare(shift);
     my $strmb = String::Multibyte->new('UTF8');
-    my $len = $strmb->length($password);
-    if($len < $self->arg) {
-        Password::Policy::Exception::InsufficientLength->throw;
+    if($strmb->islegal($password)) {
+        my $len = $strmb->length($password);
+        if($len < $self->arg) {
+            Password::Policy::Exception::InsufficientLength->throw;
+        }
+    } else {
+        my $len = length $password;
+        if($len < $self->arg) {
+            Password::Policy::Exception::InsufficientLength->throw;
+        }
     }
     return 1;
 }
